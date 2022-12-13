@@ -116,6 +116,7 @@ public class WebhookController {
 						project.setDescription(content);
 						projectService.save(project);
 						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_REGISTRATION);
+						mapUserData.remove("projectQuestion");
 					}
 					
 				}
@@ -132,8 +133,10 @@ public class WebhookController {
 			} else if (isRegistry(content)) {
 				
 				User findByRegistry = userService.findByRegistry(content.toLowerCase());
+				boolean isAdmin = findByRegistry.getProfile().equals("ADMIN");
+				
 				if (findByRegistry != null) {
-					message = getRegistryMessage(findByRegistry.getName());
+					message = getRegistryMessage(findByRegistry.getName(), isAdmin);
 					
 					//criar sessao usuario
 					Map <String, Object> mapUserData = new HashMap<String, Object>();
@@ -185,8 +188,14 @@ public class WebhookController {
 						for (Choice cho : nextQuestion.getChoices()) {
 							choices.add(cho.getName());
 						}
+						
+						if (nextQuestion.getId() == 2) {
+							choices.remove(3);
+							messageService.sendButtonMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices);
+						} else {
+							messageService.sendListMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices);
+						}
 	
-						messageService.sendListMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices);
 						message = "";
 					}
 					
@@ -253,11 +262,20 @@ public class WebhookController {
 			mapUserData.put("project", project);
 			
 			messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[0]);
+		} else if ("8".equals(content)) {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Escolha uma das opções abaixo:");
+			sb.append("\n");
+			sb.append("1) Menu admin 1");
+			sb.append("\n");
+			sb.append("2) Menu admin 2");
+			
+			messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[0]);
 		}
 		return "";
 	}
 
-	private String getRegistryMessage(String name) {
+	private String getRegistryMessage(String name, boolean isAdmin) {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("Olá " + name + "!. Escolha uma das opções abaixo:");
@@ -276,6 +294,10 @@ public class WebhookController {
 		sb.append("\n");
 		sb.append("7) Menu 7");
 		sb.append("\n");
+		if (isAdmin) {
+			sb.append("8) Administração");
+			sb.append("\n");
+		}
 		
 		
 		return sb.toString();

@@ -44,8 +44,28 @@ public class MessageService {
 		
 		try {
 			
-			
 			String json = new ObjectMapper().writeValueAsString(getBodyText(to, title, choices));
+			System.out.println(json);
+			
+			HttpResponse<JsonNode> jsonResponse 
+			  = Unirest.post(url)
+			  .headers(getHeaders())
+			  .body(json)
+			  .asJson();
+			
+			System.out.println(jsonResponse.getStatus() + " - " + jsonResponse.getStatusText());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
+	public void sendButtonMessage(String to, String title, List<String> choices) {
+		
+		try {
+			
+			String json = new ObjectMapper().writeValueAsString(getButtonBodyText(to, title, choices));
 			System.out.println(json);
 			
 			HttpResponse<JsonNode> jsonResponse 
@@ -123,6 +143,31 @@ public class MessageService {
 		
 		body.put("contents", contents);
 		
+		return body;
+	}
+	
+	private Map<String, Object> getButtonBodyText(String to, String title, List<String> choices) {
+		Map<String, Object> body = getBody(to);
+		
+		Map<String, Object> content = new HashMap<String, Object>();
+		content.put("type", "button");
+		content.put("body", title);
+		content.put("footer", "Escolha uma opção abaixo:");
+		
+		ArrayList<Map<String, Object>> buttons = new ArrayList<>();
+		for (String choice : choices) {
+			Map<String, Object> button = new HashMap<String, Object>();
+			button.put("title", choice.length() > 20 ? choice.substring(0, 20) : choice);
+			button.put("id", choice);
+			buttons.add(button);
+		}
+	
+		content.put("buttons", buttons);
+
+		ArrayList<Map<String, Object>> contents = new ArrayList<>();
+		contents.add(content);
+		
+		body.put("contents", contents);
 		return body;
 	}
 
