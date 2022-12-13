@@ -85,37 +85,37 @@ public class WebhookController {
 					case 1: {
 						project.setName(content);
 						mapUserData.put("projectQuestion", 2);
-						messageService.sendMessage(messageDto.getMessage().getTo(), PROJECT_QUESTION[1]);
+						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[1]);
 						break;
 					} case 2: {
 						project.setStore(content);
 						mapUserData.put("projectQuestion", 3);
-						messageService.sendMessage(messageDto.getMessage().getTo(), PROJECT_QUESTION[2]);
+						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[2]);
 						break;
 					} case 3: {
 						project.setActivation(content);
 						mapUserData.put("projectQuestion", 4);
-						messageService.sendListMessage(messageDto.getMessage().getTo(), PROJECT_QUESTION[3], Arrays.asList(PROJECT_CHOICES_ALIGNMENT));
+						messageService.sendListMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[3], Arrays.asList(PROJECT_CHOICES_ALIGNMENT));
 						break;
 					} case 4: {
 						project.setAlignment(content);
 						mapUserData.put("projectQuestion", 5);
-						messageService.sendMessage(messageDto.getMessage().getTo(), PROJECT_QUESTION[4]);
+						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[4]);
 						break;
 					} case 5: {
 						project.setResponsible(content);
 						mapUserData.put("projectQuestion", 6);
-						messageService.sendMessage(messageDto.getMessage().getTo(), PROJECT_QUESTION[5]);
+						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[5]);
 						break;
 					} case 6: {
 						project.setAssistant(content);
 						mapUserData.put("projectQuestion", 7);
-						messageService.sendMessage(messageDto.getMessage().getTo(), PROJECT_QUESTION[6]);
+						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[6]);
 						break;
 					} case 7: {
 						project.setDescription(content);
 						projectService.save(project);
-						messageService.sendMessage(messageDto.getMessage().getTo(), PROJECT_REGISTRATION);
+						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_REGISTRATION);
 					}
 					
 				}
@@ -169,7 +169,7 @@ public class WebhookController {
 						Choice correctAnswer = choiceService.findById(question.getAnswer());
 						message = WRONG_ANSWER + correctAnswer.getName();
 					}
-					messageService.sendMessage(messageDto.getMessage().getTo(), message);
+					messageService.sendMessage(messageDto.getMessage().getFrom(), message);
 					
 					//envia a próxima pergunta ou retorna menu
 					Question nextQuestion = questionService.getNextQuestion(user);
@@ -186,7 +186,7 @@ public class WebhookController {
 							choices.add(cho.getName());
 						}
 	
-						messageService.sendListMessage(messageDto.getMessage().getTo(), nextQuestion.getName(), choices);
+						messageService.sendListMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices);
 						message = "";
 					}
 					
@@ -198,7 +198,7 @@ public class WebhookController {
 				message = NOT_UNDERSTAND_MESSAGE;
 			}
 			if (!message.equals("")) {
-				messageService.sendMessage(messageDto.getMessage().getTo(), message);
+				messageService.sendMessage(messageDto.getMessage().getFrom(), message);
 			}
 			
 			
@@ -242,7 +242,7 @@ public class WebhookController {
 				choices.add(choice.getName());
 			}
 
-			messageService.sendListMessage(messageDto.getMessage().getTo(), question.getName(), choices);
+			messageService.sendListMessage(messageDto.getMessage().getFrom(), question.getName(), choices);
 			
 			return "";
 		} else if ("2".equals(content)) {
@@ -252,7 +252,7 @@ public class WebhookController {
 			project.setUser((User)mapUserData.get("user"));
 			mapUserData.put("project", project);
 			
-			messageService.sendMessage(messageDto.getMessage().getTo(), PROJECT_QUESTION[0]);
+			messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[0]);
 		}
 		return "";
 	}
