@@ -102,12 +102,12 @@ public class MessageService {
 		content.put("button", "Responder");
 		
 		Map<String, Object> section = new HashMap<String, Object>();
-		section.put("title", title.substring(0, 23));
+		section.put("title", title.length() > 23 ? title.substring(0, 23) : title);
 		
 		ArrayList<Map<String, Object>> rows = new ArrayList<>();
 		for (String choice : choices) {
 			Map<String, Object> row = new HashMap<String, Object>();
-			row.put("title", choice);
+			row.put("title", choice.length() > 23 ? choice.substring(0, 23) : choice);
 			row.put("id", choice);
 //			row.put("description", choice);
 			rows.add(row);
