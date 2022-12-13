@@ -44,7 +44,8 @@ public class WebhookController {
 	
 	private static final String[] PROJECT_QUESTION = new String[] { 
 			  "Nome do projeto", "Nome da loja", "Período de ativação em loja", 
-			  "Alinhamento com as iniciativas estratégicas da Colgate", "Responsável", "Ajudantes", "Descrição" };
+			  "Alinhamento com as iniciativas estratégicas da Colgate", "Responsável", "Ajudantes", "Descrição", 
+			  "Confirme o envio do projeto. Se desejar anexar arquivos, pode clicar na opção de enviar arquivos."};
 	
 	private static final String[] PROJECT_CHOICES_ALIGNMENT = new String[] { 
 			  "Eficiencia e produtividade", "Criatividade e inovação", "Metas e incentivos" };
@@ -114,6 +115,9 @@ public class WebhookController {
 						break;
 					} case 7: {
 						project.setDescription(content);
+						mapUserData.put("projectQuestion", 8);
+						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[7]);
+					} case 8: {
 						projectService.save(project);
 						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_REGISTRATION);
 						mapUserData.remove("projectQuestion");
@@ -133,9 +137,8 @@ public class WebhookController {
 			} else if (isRegistry(content)) {
 				
 				User findByRegistry = userService.findByRegistry(content.toLowerCase());
-				boolean isAdmin = findByRegistry.getProfile().equals("ADMIN");
-				
 				if (findByRegistry != null) {
+					boolean isAdmin = findByRegistry.getProfile().equals("ADMIN");
 					message = getRegistryMessage(findByRegistry.getName(), isAdmin);
 					
 					//criar sessao usuario

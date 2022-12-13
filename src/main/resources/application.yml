@@ -21,6 +21,6 @@ spring:
     init:
       mode: never
 zenvia:
-  from: glimmer-nerine
-  token: lbYGjRZTDEwI8JYU-CdHLcXdEVEcFVcu0QSm
+  from: ink-may
+  token: T2ewTmuGuWqMFCFVO_IWZyaYKt6UzPU6AvpZ
   url: https://api.zenvia.com/v2/channels/whatsapp/messages
