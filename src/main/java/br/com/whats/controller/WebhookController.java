@@ -26,7 +26,9 @@ import br.com.whats.service.MessageService;
 import br.com.whats.service.ProjectService;
 import br.com.whats.service.QuestionService;
 import br.com.whats.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/webhook")
 public class WebhookController {
@@ -44,8 +46,9 @@ public class WebhookController {
 	
 	private static final String[] PROJECT_QUESTION = new String[] { 
 			  "Nome do projeto", "Nome da loja", "Período de ativação em loja", 
-			  "Alinhamento com as iniciativas estratégicas da Colgate", "Responsável", "Ajudantes", "Descrição", 
-			  "Confirme o envio do projeto. Se desejar anexar arquivos, pode clicar na opção de enviar arquivos."};
+			  "Alinhamento com as iniciativas estratégicas da Colgate", "Responsável", "Ajudantes", "Descrição",
+			  "Inserir imagens", "Clique no clipe ( 📎 ) para anexar as imagens do projeto",
+			  "Clique em OK para confirmar a inscrição do seu projeto"};
 	
 	private static final String[] PROJECT_CHOICES_ALIGNMENT = new String[] { 
 			  "Eficiencia e produtividade", "Criatividade e inovação", "Metas e incentivos" };
@@ -86,11 +89,13 @@ public class WebhookController {
 					case 1: {
 						project.setName(content);
 						mapUserData.put("projectQuestion", 2);
+						log.info("Sending to: "+ messageDto.getMessage().getFrom() + ": " + PROJECT_QUESTION[1]);
 						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[1]);
 						break;
 					} case 2: {
 						project.setStore(content);
 						mapUserData.put("projectQuestion", 3);
+						log.info("Sending to: "+ messageDto.getMessage().getFrom() + ": " + PROJECT_QUESTION[2]);
 						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[2]);
 						break;
 					} case 3: {
@@ -116,8 +121,26 @@ public class WebhookController {
 					} case 7: {
 						project.setDescription(content);
 						mapUserData.put("projectQuestion", 8);
-						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[7]);
+						
+						List<String> list = new ArrayList<String>();
+						list.add(PROJECT_QUESTION[7]);
+						messageService.sendButtonMessage(messageDto.getMessage().getFrom(), "Inserir imagens do projeto", list, false);
+						
+						break;
 					} case 8: {
+						mapUserData.put("projectQuestion", 9);
+						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[8]);
+						
+						break;
+					} case 9: {
+						mapUserData.put("projectQuestion", 10);
+						
+						List<String> list = new ArrayList<String>();
+						list.add("OK");
+						messageService.sendButtonMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[9], list, false);
+						
+						break;
+					} case 10: {
 						projectService.save(project);
 						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_REGISTRATION);
 						mapUserData.remove("projectQuestion");
@@ -194,7 +217,7 @@ public class WebhookController {
 						
 						if (nextQuestion.getId() == 2) {
 							choices.remove(3);
-							messageService.sendButtonMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices);
+							messageService.sendButtonMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices, true);
 						} else {
 							messageService.sendListMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices);
 						}

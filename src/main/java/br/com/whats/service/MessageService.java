@@ -13,6 +13,9 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class MessageService {
 	
@@ -26,6 +29,8 @@ public class MessageService {
 	private String from;
 	
 	public void sendMessage(String to, String text) {
+		
+//		log.info("Sending to: "+ to + ": " + text);
 		
 		try {
 			HttpResponse<JsonNode> jsonResponse 
@@ -61,11 +66,11 @@ public class MessageService {
 		
 	}
 	
-	public void sendButtonMessage(String to, String title, List<String> choices) {
+	public void sendButtonMessage(String to, String title, List<String> choices, boolean showFooter) {
 		
 		try {
 			
-			String json = new ObjectMapper().writeValueAsString(getButtonBodyText(to, title, choices));
+			String json = new ObjectMapper().writeValueAsString(getButtonBodyText(to, title, choices, showFooter));
 			System.out.println(json);
 			
 			HttpResponse<JsonNode> jsonResponse 
@@ -146,13 +151,15 @@ public class MessageService {
 		return body;
 	}
 	
-	private Map<String, Object> getButtonBodyText(String to, String title, List<String> choices) {
+	private Map<String, Object> getButtonBodyText(String to, String title, List<String> choices, boolean showFooter) {
 		Map<String, Object> body = getBody(to);
 		
 		Map<String, Object> content = new HashMap<String, Object>();
 		content.put("type", "button");
 		content.put("body", title);
-		content.put("footer", "Escolha uma opção abaixo:");
+		if (showFooter) {
+			content.put("footer", "Escolha uma opção abaixo:");
+		}
 		
 		ArrayList<Map<String, Object>> buttons = new ArrayList<>();
 		for (String choice : choices) {
