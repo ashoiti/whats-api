@@ -6,7 +6,7 @@ INSERT INTO tb_quiz (name) values ('Questionário 1');
 
 INSERT INTO tb_user_quiz (id_user, id_quiz, answered) values (1, 1, 0);
 
-INSERT INTO tb_question (name, answer, ord, id_quiz) values ('Quem fez o primeiro gol do Brasil na copa de 2022?', 2, 1, 1);
+INSERT INTO tb_question (name, answer, ord, id_quiz, points) values ('Quem fez o primeiro gol do Brasil na copa de 2022?', 2, 1, 1, 10);
 
 INSERT INTO tb_choice (name, id_question) values ('Neymar', 1);
 INSERT INTO tb_choice (name, id_question) values ('Richarlison', 1);

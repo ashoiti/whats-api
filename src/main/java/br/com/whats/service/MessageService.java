@@ -29,9 +29,6 @@ public class MessageService {
 	private String from;
 	
 	public void sendMessage(String to, String text) {
-		
-//		log.info("Sending to: "+ to + ": " + text);
-		
 		try {
 			HttpResponse<JsonNode> jsonResponse 
 			  = Unirest.post(url)
@@ -39,17 +36,14 @@ public class MessageService {
 			  .body(new ObjectMapper().writeValueAsString(getBodyText(to, text)))
 			  .asJson();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
 		}
-		
 	}
 	
 	public void sendListMessage(String to, String title, List<String> choices) {
-		
 		try {
 			
-			String json = new ObjectMapper().writeValueAsString(getBodyText(to, title, choices));
+			String json = new ObjectMapper().writeValueAsString(getListText(to, title, choices));
 			System.out.println(json);
 			
 			HttpResponse<JsonNode> jsonResponse 
@@ -60,14 +54,11 @@ public class MessageService {
 			
 			System.out.println(jsonResponse.getStatus() + " - " + jsonResponse.getStatusText());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
 		}
-		
 	}
 	
 	public void sendButtonMessage(String to, String title, List<String> choices, boolean showFooter) {
-		
 		try {
 			
 			String json = new ObjectMapper().writeValueAsString(getButtonBodyText(to, title, choices, showFooter));
@@ -81,10 +72,8 @@ public class MessageService {
 			
 			System.out.println(jsonResponse.getStatus() + " - " + jsonResponse.getStatusText());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
 		}
-		
 	}
 	
 	private Map<String, String> getHeaders() {
@@ -118,7 +107,7 @@ public class MessageService {
 		return body;
 	}
 	
-	private Map<String, Object> getBodyText(String to, String title, List<String> choices) {
+	private Map<String, Object> getListText(String to, String title, List<String> choices) {
 		Map<String, Object> body = getBody(to);
 		
 		Map<String, Object> content = new HashMap<String, Object>();

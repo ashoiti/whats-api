@@ -39,7 +39,7 @@ public class WebhookController {
 	private static final String CORRECT_ANSWER = "Parabéns! Você acertou!!!";
 	private static final String WRONG_ANSWER = "Não foi dessa vez...A resposta correta é: ";
 	private static final String QUESTION_ANSWERED = "Você já respondeu essa pergunta";
-	private static final String NO_QUESTION_TO_ANSWER = "Você já respondeu todas as perguntas disponíveis";
+	private static final String NO_QUESTION_TO_ANSWER = "Parabéns! Você respondeu todas as perguntas, sua pontuação para este quiz é ";
 	private static final String PROJECT_REGISTRATION = "Projeto cadastrado!";
 	
 	private static Map<String, Map<String, Object>> mapUser = new HashMap<String, Map<String,Object>>();
@@ -162,7 +162,7 @@ public class WebhookController {
 				User findByRegistry = userService.findByRegistry(content.toLowerCase());
 				if (findByRegistry != null) {
 					boolean isAdmin = findByRegistry.getProfile().equals("ADMIN");
-					message = getRegistryMessage(findByRegistry.getName(), isAdmin);
+					message = getMenuMessage(findByRegistry.getName(), isAdmin);
 					
 					//criar sessao usuario
 					Map <String, Object> mapUserData = new HashMap<String, Object>();
@@ -190,6 +190,8 @@ public class WebhookController {
 					
 					//atualiza banco
 					userService.answerQuestion(user, question, choice);
+					
+					
 					
 					//envia mensagem com o feedback
 					if (isCorrect) {
@@ -301,27 +303,31 @@ public class WebhookController {
 		return "";
 	}
 
-	private String getRegistryMessage(String name, boolean isAdmin) {
+	private String getMenuMessage(String name, boolean isAdmin) {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("Olá " + name + "!. Escolha uma das opções abaixo:");
 		sb.append("\n");
-		sb.append("1) Responder questionário");
+		sb.append("1) Quiz");
 		sb.append("\n");
-		sb.append("2) Cadastrar projeto");
+		sb.append("2) Inscrição / votação de projetos");
 		sb.append("\n");
-		sb.append("3) Menu 3");
+		sb.append("3) Metas SOE");
 		sb.append("\n");
-		sb.append("4) Menu 4");
+		sb.append("4) Metas SOS");
 		sb.append("\n");
-		sb.append("5) Menu 5");
+		sb.append("5) Desafio adicional");
 		sb.append("\n");
-		sb.append("6) Menu 6");
+		sb.append("6) Ranking");
 		sb.append("\n");
-		sb.append("7) Menu 7");
+		sb.append("7) FAQ (Duvidas Frequentes)");
+		sb.append("\n");
+		sb.append("8) Regulamento da Campanha");
+		sb.append("\n");
+		sb.append("9) Falar com suporte");
 		sb.append("\n");
 		if (isAdmin) {
-			sb.append("8) Administração");
+			sb.append("10) Administração");
 			sb.append("\n");
 		}
 		

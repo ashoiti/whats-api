@@ -26,6 +26,7 @@ public class Question {
     private Integer id;
     private String name;
     private Integer answer;
+    private Integer points;
     
     @ManyToOne
     @JoinColumn(name="id_quiz", nullable=false)	
