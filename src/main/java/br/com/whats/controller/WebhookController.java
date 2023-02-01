@@ -21,6 +21,7 @@ import br.com.whats.model.Project;
 import br.com.whats.model.Question;
 import br.com.whats.model.Quiz;
 import br.com.whats.model.User;
+import br.com.whats.model.UserQuiz;
 import br.com.whats.service.ChoiceService;
 import br.com.whats.service.MessageService;
 import br.com.whats.service.ProjectService;
@@ -188,25 +189,33 @@ public class WebhookController {
 					Choice choice = choiceService.findByNameQuestion(content, question);
 					boolean isCorrect = question.getAnswer().equals(choice.getId());
 					
-					//atualiza banco
+					//atualiza user_question
 					userService.answerQuestion(user, question, choice);
-					
-					
+										
+					UserQuiz quizUser = userService.getQuizUser(user, question.getQuiz());
 					
 					//envia mensagem com o feedback
 					if (isCorrect) {
 						message = CORRECT_ANSWER;
+						quizUser.setResult(quizUser.getResult() + question.getPoints());
 					} else {
 						Choice correctAnswer = choiceService.findById(question.getAnswer());
 						message = WRONG_ANSWER + correctAnswer.getName();
 					}
+					
+					quizUser.setAnswered(quizUser.getAnswered() + 1);
+					userService.updateQuizUser(quizUser);
+					
 					messageService.sendMessage(messageDto.getMessage().getFrom(), message);
 					
 					//envia a próxima pergunta ou retorna menu
 					Question nextQuestion = questionService.getNextQuestion(user);
 					
 					if (nextQuestion == null) {
-						message = NO_QUESTION_TO_ANSWER;
+						Integer totalPossibleQuizPoints = questionService.getQuestionPointsByQuiz(question.getQuiz().getId());
+						Integer quizResult = quizUser.getResult();
+						
+						message = NO_QUESTION_TO_ANSWER + formatResultQuiz(totalPossibleQuizPoints, quizResult);
 					} else {
 						//salva a questão na sessão
 						mapUserData.put("lastQuestion", nextQuestion.getId());
@@ -217,12 +226,14 @@ public class WebhookController {
 							choices.add(cho.getName());
 						}
 						
-						if (nextQuestion.getId() == 2) {
-							choices.remove(3);
-							messageService.sendButtonMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices, true);
-						} else {
-							messageService.sendListMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices);
-						}
+//						if (nextQuestion.getId() == 2) {
+//							choices.remove(3);
+//							messageService.sendButtonMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices, true);
+//						} else {
+//							messageService.sendListMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices);
+//						}
+						
+						messageService.sendListMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices);
 	
 						message = "";
 					}
@@ -236,6 +247,14 @@ public class WebhookController {
 			}
 			if (!message.equals("")) {
 				messageService.sendMessage(messageDto.getMessage().getFrom(), message);
+				if (message.startsWith(NO_QUESTION_TO_ANSWER)) {
+					Map<String, Object> mapUserData = (Map<String, Object>) mapUser.get(getFrom(messageDto));
+					User user = (User) mapUserData.get("user");
+					
+					boolean isAdmin = user.getProfile().equals("ADMIN");
+					message = getMenuMessage(user.getName(), isAdmin);
+					messageService.sendMessage(messageDto.getMessage().getFrom(), message);
+				}
 			}
 			
 			
@@ -246,6 +265,10 @@ public class WebhookController {
 		}
 		
 		return"";
+	}
+	
+	private String formatResultQuiz(Integer total, Integer result) {
+		return result + "/" + total;
 	}
 	
 	private boolean isProjectAnswer(MessageEventDto messageDto) {
@@ -267,7 +290,17 @@ public class WebhookController {
 			Question question = questionService.getNextQuestion(user);
 			
 			if (question == null) {
-				return NO_QUESTION_TO_ANSWER;
+				
+				//obtem o ultimo quiz respondido
+				Quiz findQuizAnsweredByUser = userService.findQuizAnsweredByUser(user);
+				UserQuiz quizUser = userService.getQuizUser(user, findQuizAnsweredByUser);
+				
+				Integer totalPossibleQuizPoints = questionService.getQuestionPointsByQuiz(findQuizAnsweredByUser.getId());
+				Integer quizResult = quizUser.getResult();
+				
+				return NO_QUESTION_TO_ANSWER + formatResultQuiz(totalPossibleQuizPoints, quizResult);
+				
+//				return NO_QUESTION_TO_ANSWER;
 			}
 			
 			//salva a questão na sessão

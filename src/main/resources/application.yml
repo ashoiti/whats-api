@@ -21,6 +21,6 @@ spring:
     init:
       mode: never
 zenvia:
-  from: ink-may
-  token: T2ewTmuGuWqMFCFVO_IWZyaYKt6UzPU6AvpZ
+  from: cherry-cormorant
+  token: JCaHxh_GLNP6by3Yy55nPbzKe7MVWUsWwR8c
   url: https://api.zenvia.com/v2/channels/whatsapp/messages

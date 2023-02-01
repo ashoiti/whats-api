@@ -3,6 +3,7 @@ package br.com.whats.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import br.com.whats.model.User;
 import br.com.whats.model.UserQuestion;
 import br.com.whats.model.UserQuestionKey;
 import br.com.whats.model.UserQuiz;
+import br.com.whats.model.UserQuizKey;
 import br.com.whats.repository.IUserQuestionRepository;
 import br.com.whats.repository.IUserQuizRepository;
 import br.com.whats.repository.IUserRepository;
@@ -59,6 +61,24 @@ public class UserService {
 		
 	}
 	
+	public Quiz findQuizAnsweredByUser(User user) {
+		
+		List<UserQuiz> quizByUser = userQuizRepository.findByUser(user);
+		
+		if (quizByUser == null || quizByUser.isEmpty()) {
+			return null;
+		}
+		
+		for (UserQuiz userQuiz : quizByUser) {
+			if (userQuiz.getAnswered().equals(userQuiz.getQuiz().getQuestions().size())) {
+				return userQuiz.getQuiz();
+			}
+		}
+		
+		return null;
+		
+	}
+	
 	public List<Question> findQuestionAnsweredsByUser (User user) {
 	
 		List<UserQuestion> questionByUser = userQuestionRepository.findByUser(user);
@@ -100,4 +120,17 @@ public class UserService {
 		userQuestionRepository.save(userQuestion);
 	}
 	
+	public UserQuiz getQuizUser(User user, Quiz quiz) {
+		UserQuizKey id = new UserQuizKey();
+		id.setQuizId(quiz.getId());
+		id.setUserId(user.getId());
+		
+		return userQuizRepository.findById(id).orElseThrow(() -> new RuntimeException("UserQuiz not found!!"));
+		
+	}
+	
+	public void updateQuizUser(UserQuiz quizUser) {
+		userQuizRepository.save(quizUser);
+	}
+	 
 }

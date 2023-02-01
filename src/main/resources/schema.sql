@@ -16,6 +16,7 @@ CREATE TABLE tb_user_quiz (
   id_user INTEGER NOT NULL,
   id_quiz INTEGER NOT NULL,
   answered INTEGER NOT NULL,
+  result INTEGER NOT NULL,
   CONSTRAINT pk_tb_user_quiz PRIMARY KEY (id_user, id_quiz)
 );
 
@@ -69,11 +70,11 @@ INSERT INTO tb_user (name, telephone, email, registry , profile) values ('Feijoa
 
 INSERT INTO tb_quiz (name) values ('Questionário 1');
 
-INSERT INTO tb_user_quiz (id_user, id_quiz, answered) values (1, 1, 0);
-INSERT INTO tb_user_quiz (id_user, id_quiz, answered) values (2, 1, 0);
-INSERT INTO tb_user_quiz (id_user, id_quiz, answered) values (3, 1, 0);
+INSERT INTO tb_user_quiz (id_user, id_quiz, answered, result) values (1, 1, 0, 0);
+INSERT INTO tb_user_quiz (id_user, id_quiz, answered, result) values (2, 1, 0, 0);
+INSERT INTO tb_user_quiz (id_user, id_quiz, answered, result) values (3, 1, 0, 0);
 
-INSERT INTO tb_question (name, answer, ord, id_quiz, points) values ('A nova linha Zero tem como principal benefício A nova linha Zero tem como principal benefício A nova linha Zero tem como principal benefício:', 1, 1, 1, 10);
+INSERT INTO tb_question (name, answer, ord, id_quiz, points) values ('A nova linha Zero tem como principal benefício A nova linha Zero tem como principal benefício A nova linha Zero tem como principal benefício:', 3, 1, 1, 10);
 
 INSERT INTO tb_choice (name, id_question) values ('Ser uma linha com 0% ingredientes artificiais (aromas, corantes, conservantes, adoçantes), vegano e sem glúten', 1);
 INSERT INTO tb_choice (name, id_question) values ('Linha com embalagem reciclável', 1);

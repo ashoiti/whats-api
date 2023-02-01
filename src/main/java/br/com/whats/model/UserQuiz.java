@@ -28,5 +28,7 @@ public class UserQuiz {
     private Quiz quiz;
     
     private Integer answered;
+    
+    private Integer result;
 
 }

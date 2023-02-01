@@ -30,6 +30,10 @@ public class QuestionService {
 		//verifica se usuario tem questionario
 		Quiz quiz = userService.findQuizByUser(user);
 		
+		if (quiz == null) {
+			return null;
+		}
+		
 		//busca as questões respondidas
 		List<Question> questionsAnswereds = userService.findQuestionAnsweredsByUser(user);
 		
@@ -63,6 +67,10 @@ public class QuestionService {
 		}
 		return notAnswered.stream().findFirst().get();
 		
+	}
+	
+	public Integer getQuestionPointsByQuiz(Integer idQuiz) {
+		return repository.selectPoints(idQuiz);
 	}
 	
 }

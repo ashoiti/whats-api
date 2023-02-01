@@ -123,7 +123,7 @@ public class MessageService {
 			Map<String, Object> row = new HashMap<String, Object>();
 			row.put("title", choice.length() > 23 ? choice.substring(0, 23) : choice);
 			row.put("id", choice);
-//			row.put("description", choice);
+//			row.put("description", choice.length() > 71 ? choice.substring(0, 71) : choice);
 			rows.add(row);
 		}
 		section.put("rows", rows);
