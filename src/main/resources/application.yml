@@ -21,6 +21,7 @@ spring:
     init:
       mode: never
 zenvia:
-  from: cherry-cormorant
-  token: JCaHxh_GLNP6by3Yy55nPbzKe7MVWUsWwR8c
+  from: happy-scion
+  token: t6e6_X6XdQWQ_IGOkw994RrMKkTbLZ8LVK7_
   url: https://api.zenvia.com/v2/channels/whatsapp/messages
+  fileUrl: https://api.zenvia.com/v2/files

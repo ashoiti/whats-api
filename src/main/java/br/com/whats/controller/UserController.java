@@ -1,5 +1,6 @@
 package br.com.whats.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,6 +8,20 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
+
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -70,7 +85,7 @@ public class UserController {
 	
 	private Map<String, Object> getFileBody(String url) {
 		Map<String, Object> body = new HashMap<String, Object>();
-		body.put("from", "cherry-cormorant");
+		body.put("from", "aerial-smartphone");
 		body.put("to", "5511971803191");
 		
 		Map<String, Object> content = new HashMap<String, Object>();
@@ -91,7 +106,7 @@ public class UserController {
 	@GetMapping
 	public String testFile() throws IOException, UnirestException {
 	    InputStream in = getClass()
-	      .getResourceAsStream("/detran.pdf");
+	      .getResourceAsStream("/pdf-java-output.pdf");
 	    byte[] byteArray = IOUtils.toByteArray(in);
 	    
 	    Map<String, String> headers = new HashMap<String, String>();
@@ -99,7 +114,7 @@ public class UserController {
 	    headers.put("content-type", "application/pdf");
 		headers.put("content-disposition", "inline;filename=my-image.pdf");
 		headers.put("cache-control", "no-cache");
-		headers.put("X-API-TOKEN", "JCaHxh_GLNP6by3Yy55nPbzKe7MVWUsWwR8c");
+		headers.put("X-API-TOKEN", "xDFcVc4hcUJaVVAkUuo-9mG94m9lmLGDO84U");
 		
 //		File outputFile = new File("a.pdf");
 //		FileUtils.writeByteArrayToFile(outputFile, byteArray);
@@ -120,7 +135,7 @@ public class UserController {
 		
 	    headers = new HashMap<String, String>();
 		headers.put("Content-Type", "application/json");
-		headers.put("X-API-TOKEN", "JCaHxh_GLNP6by3Yy55nPbzKe7MVWUsWwR8c");
+		headers.put("X-API-TOKEN", "xDFcVc4hcUJaVVAkUuo-9mG94m9lmLGDO84U");
 		
 		Map<String, Object> body = getFileBody(url);
 		jsonResponse 
@@ -134,6 +149,9 @@ public class UserController {
 	
 	@GetMapping(value = "/generate-image")
 	public void generateImage() {
+		
+		
+		
 		InputStream in = getClass()
 			      .getResourceAsStream("/img2.jpg");
 	    byte[] byteArray;
@@ -173,7 +191,7 @@ public class UserController {
 	        field.setValue("This is a seventh field printed by Java");
 	        
 			
-	        PDImageXObject pdImage = PDImageXObject.createFromByteArray(pDDocument, rep.getById(1).getContent(), "img.png");
+	        PDImageXObject pdImage = PDImageXObject.createFromByteArray(pDDocument, rep.getById((long)1).getContent(), "a.png");
 	        
 	        PDPage my_page = new PDPage();
 	        pDDocument.addPage(my_page);
@@ -182,12 +200,160 @@ public class UserController {
 	        contents.setHorizontalScaling(50);
 	        contents.close();  
 	        
-	        pDDocument.save("C:\\Users\\andre.shoiti.yamachi\\DEV\\pdf-java-output.pdf");
+	        ByteArrayOutputStream out = new ByteArrayOutputStream();
+	        pDDocument.save(out);
+	        
+	        pDDocument.save("C:\\Users\\Andre\\Downloads\\pdf-java-output.pdf");
 	        pDDocument.close();
+	        
+	        sendEmail();
+	        
+//	        InputStream inputStream = new ByteArrayInputStream(out.toByteArray());
+//	        byte[] byteArray = IOUtils.toByteArray(inputStream);
+//	        
+////	        ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
+////	        byte[] readAllBytes = in.readAllBytes();
+//	        
+//	        Map<String, String> headers = new HashMap<String, String>();
+//			headers.put("X-API-TOKEN", "xDFcVc4hcUJaVVAkUuo-9mG94m9lmLGDO84U");
+//			headers.put("content-type", "application/pdf");
+//			headers.put("content-disposition", "inline;filename=my-image.pdf");
+//			headers.put("cache-control", "no-cache");
+//			
+//	        HttpResponse<JsonNode> jsonResponse = Unirest.post("https://api.zenvia.com/v2/files")
+//					.headers(headers )
+//					.body(byteArray)
+//
+//					.asJson();
+//
+//		    String url = (String) jsonResponse.getBody().getObject().get("url");
+//		    
+//		    headers = new HashMap<String, String>();
+//			headers.put("Content-Type", "application/json");
+//			headers.put("X-API-TOKEN", "xDFcVc4hcUJaVVAkUuo-9mG94m9lmLGDO84U");
+//			
+//			Map<String, Object> body = getFileBody(url);
+//			jsonResponse 
+//			  = Unirest.post("https://api.zenvia.com/v2/channels/whatsapp/messages")
+//			  .headers(headers )
+//			  .body(new ObjectMapper().writeValueAsString(body))
+//			  .asJson();
+	        
+	        
+	        
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	    }
 		
+	}
+	
+	private void sendEmail() {
+		
+		Properties prop = new Properties();
+		prop.put("mail.smtp.host", "smtp.gmail.com");
+        prop.put("mail.smtp.port", "587");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.smtp.starttls.enable", "true"); //TLS
+        prop.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+		
+		Session session = Session.getInstance(prop, new Authenticator() {
+		    @Override
+		    protected PasswordAuthentication getPasswordAuthentication() {
+		        return new PasswordAuthentication("andre.shoiti@gmail.com", "tbmvyszhyoadcoml");
+		    }
+		});
+		
+		Message message = new MimeMessage(session);
+		try {
+			message.setFrom(new InternetAddress("andre.shoiti@gmail.com"));
+			message.setRecipients(
+			  Message.RecipientType.TO, InternetAddress.parse("andre.shoiti@gmail.com"));
+			message.setSubject("Mail Subject");
+			
+			String msg = "This is my first email using JavaMailer";
+			
+			MimeBodyPart mimeBodyPart = new MimeBodyPart();
+			mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
+			
+			MimeBodyPart attachmentBodyPart = new MimeBodyPart();
+			attachmentBodyPart.attachFile(new File("C:\\Users\\Andre\\Downloads\\pdf-java-output.pdf"));
+			
+			Multipart multipart = new MimeMultipart();
+			multipart.addBodyPart(mimeBodyPart);
+			multipart.addBodyPart(attachmentBodyPart);
+			
+			message.setContent(multipart);
+			
+			Transport.send(message);
+		} catch (AddressException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@GetMapping(value = "/generate-zenvia-image")
+	public void generateZenviaImage() {
+		try {
+			HttpResponse<InputStream> asBinary = Unirest.get("https://zenvia.chat/storage/files/2ae2bcd2856230fc62aa9901b8f8dc99c9cd2a84af2b025cae9067a3a6e3a602.bin")
+			  .asBinary();
+			System.out.println(asBinary);
+			
+			
+		    byte[] byteArray = IOUtils.toByteArray(asBinary.getBody());
+			Image img = new Image();
+			img.setContent(byteArray);
+			rep.save(img);
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			    
+	}
+	
+	@GetMapping(value = "/save-zenvia-image")
+	public void saveZenviaImage() {
+		try {
+			
+			Map<String, String> headers = new HashMap<String, String>();
+			headers.put("X-API-TOKEN", "xDFcVc4hcUJaVVAkUuo-9mG94m9lmLGDO84U");
+			
+			HttpResponse<JsonNode> jsonResponse 
+			  = Unirest.post("https://api.zenvia.com/v2/files")
+			  .headers(headers)
+			  .body(new ObjectMapper().writeValueAsString(getBody("https://chat.zenvia.com/storage/files/2b3e5d68ea3f3b362cb5ca27e17c187ef3cf7404847266d9c250bc85fdb43a79.bin", "image/jpeg")))
+			  .asJson();
+			
+			jsonResponse.getBody().getObject().get("id");
+			
+			
+			
+		} catch (Exception e) {
+			
+			
+		}
+			    
+	}
+	
+	private Map<String, Object> getBody(String sourceUrl, String mimeType) {
+		Map<String, Object> body = new HashMap<String, Object>();
+		body.put("sourceUrl", sourceUrl);
+		body.put("mimeType", mimeType);
+		body.put("autoDeleteMinutes", 5);
+		
+		Map<String, Object> sourceHeader = new HashMap<String, Object>();
+		sourceHeader.put("Authorization", "Basic" + " " + "xDFcVc4hcUJaVVAkUuo-9mG94m9lmLGDO84U");
+		sourceHeader.put("X-Custom-Token", "TOKEN");
+		body.put("sourceHeaders", sourceHeader);
+		
+		return body;
 	}
 
 }

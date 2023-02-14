@@ -11,6 +11,10 @@ public class ContentDto implements Serializable {
 
 	private String text;
 	private String type;
+	
+	private String fileUrl;
+	private String fileMimeType;
+	private String fileCaption;
 
 	public String getText() {
 		return text;
@@ -26,6 +30,30 @@ public class ContentDto implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+
+	public String getFileUrl() {
+		return fileUrl;
+	}
+
+	public void setFileUrl(String fileUrl) {
+		this.fileUrl = fileUrl;
+	}
+
+	public String getFileMimeType() {
+		return fileMimeType;
+	}
+
+	public void setFileMimeType(String fileMimeType) {
+		this.fileMimeType = fileMimeType;
+	}
+
+	public String getFileCaption() {
+		return fileCaption;
+	}
+
+	public void setFileCaption(String fileCaption) {
+		this.fileCaption = fileCaption;
 	}
 
 }

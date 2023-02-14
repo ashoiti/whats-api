@@ -18,4 +18,10 @@ public class ProjectService {
 		
 	}
 	
+	public String generatePdfProject(Project project) {
+		
+		
+		return "";
+	}
+	
 }

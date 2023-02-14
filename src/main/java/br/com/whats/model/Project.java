@@ -28,8 +28,13 @@ public class Project {
     private String responsible;
     private String assistant;
     private String description;
+    private String mail;
     
     @ManyToOne
     @JoinColumn(name="id_user", nullable=false)	
     private User user;
+    
+    @ManyToOne
+    @JoinColumn(name="id_image")	
+    private Image image;
 }

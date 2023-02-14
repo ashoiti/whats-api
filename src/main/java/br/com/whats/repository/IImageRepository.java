@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import br.com.whats.model.Image;
 
-public interface IImageRepository extends JpaRepository<Image, Integer> {
+public interface IImageRepository extends JpaRepository<Image, Long> {
 
 
 }

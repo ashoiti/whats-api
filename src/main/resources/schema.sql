@@ -33,6 +33,7 @@ CREATE TABLE tb_question (
 CREATE TABLE tb_choice (
   id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
   name VARCHAR(200) NOT NULL,
+  display VARCHAR(100) NOT NULL,
   id_question INTEGER NOT NULL, 
   CONSTRAINT fk_tb_choice FOREIGN KEY (id_question) REFERENCES tb_question(id)
 );
@@ -46,6 +47,14 @@ CREATE TABLE tb_user_question (
   CONSTRAINT pk_tb_user_question PRIMARY KEY (id_user, id_question)
 );
 
+CREATE TABLE tb_image (
+  id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+  zenvia_url VARCHAR(200),
+  mimetype VARCHAR(30),
+  name VARCHAR(100),
+  content BLOB
+);
+
 CREATE TABLE tb_project (
   id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
   name VARCHAR(200) NOT NULL,
@@ -56,12 +65,10 @@ CREATE TABLE tb_project (
   assistant VARCHAR(100) NOT NULL,
   description VARCHAR(200) NOT NULL,
   id_user INTEGER NOT NULL,
-  CONSTRAINT fk_tb_project FOREIGN KEY (id_user) REFERENCES tb_user(id)
-);
-
-CREATE TABLE tb_image (
-  id INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
-  content BLOB
+  id_image BIGINT,
+  mail VARCHAR(100),
+  CONSTRAINT fk_tb_project FOREIGN KEY (id_user) REFERENCES tb_user(id),
+  CONSTRAINT fk_tb_project2 FOREIGN KEY (id_image) REFERENCES tb_image(id)
 );
 
 INSERT INTO tb_user (name, telephone, email, registry , profile) values ('Shoiti', '5511971803191','andre.shoiti@gmail.com','t123456', 'ADMIN');
@@ -74,16 +81,16 @@ INSERT INTO tb_user_quiz (id_user, id_quiz, answered, result) values (1, 1, 0, 0
 INSERT INTO tb_user_quiz (id_user, id_quiz, answered, result) values (2, 1, 0, 0);
 INSERT INTO tb_user_quiz (id_user, id_quiz, answered, result) values (3, 1, 0, 0);
 
-INSERT INTO tb_question (name, answer, ord, id_quiz, points) values ('A nova linha Zero tem como principal benefício A nova linha Zero tem como principal benefício A nova linha Zero tem como principal benefício:', 3, 1, 1, 10);
+INSERT INTO tb_question (name, answer, ord, id_quiz, points) values ('A nova linha Zero tem como principal benefício?', 3, 1, 1, 10);
 
-INSERT INTO tb_choice (name, id_question) values ('Ser uma linha com 0% ingredientes artificiais (aromas, corantes, conservantes, adoçantes), vegano e sem glúten', 1);
-INSERT INTO tb_choice (name, id_question) values ('Linha com embalagem reciclável', 1);
-INSERT INTO tb_choice (name, id_question) values ('Produto vegano', 1);
-INSERT INTO tb_choice (name, id_question) values ('Produto sem conservantes', 1);
+INSERT INTO tb_choice (name, display, id_question) values ('Ser uma linha com 0% ingredientes artificiais (aromas, corantes, conservantes, adoçantes), vegano e sem glúten', 'Resposta A', 1);
+INSERT INTO tb_choice (name, display, id_question) values ('Linha com embalagem reciclável', 'Resposta B', 1);
+INSERT INTO tb_choice (name, display, id_question) values ('Produto vegano', 'Resposta C', 1);
+INSERT INTO tb_choice (name, display, id_question) values ('Produto sem conservantes', 'Resposta D', 1);
 
 INSERT INTO tb_question (name, answer, ord, id_quiz, points) values ('Quando foi a última vez que o Brasil ganhou uma copa do mundo?', 7, 2, 1, 10);
 
-INSERT INTO tb_choice (name, id_question) values ('2010', 2);
-INSERT INTO tb_choice (name, id_question) values ('2014', 2);
-INSERT INTO tb_choice (name, id_question) values ('2002', 2);
-INSERT INTO tb_choice (name, id_question) values ('1994', 2);
+INSERT INTO tb_choice (name, display, id_question) values ('2010', 'Resposta A', 2);
+INSERT INTO tb_choice (name, display, id_question) values ('2014', 'Resposta B', 2);
+INSERT INTO tb_choice (name, display, id_question) values ('2002', 'Resposta C', 2);
+INSERT INTO tb_choice (name, display, id_question) values ('1994', 'Resposta D', 2);

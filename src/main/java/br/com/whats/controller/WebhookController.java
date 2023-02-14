@@ -17,12 +17,14 @@ import com.zenvia.api.sdk.webhook.MessageEvent;
 
 import br.com.whats.dto.MessageEventDto;
 import br.com.whats.model.Choice;
+import br.com.whats.model.Image;
 import br.com.whats.model.Project;
 import br.com.whats.model.Question;
 import br.com.whats.model.Quiz;
 import br.com.whats.model.User;
 import br.com.whats.model.UserQuiz;
 import br.com.whats.service.ChoiceService;
+import br.com.whats.service.ImageService;
 import br.com.whats.service.MessageService;
 import br.com.whats.service.ProjectService;
 import br.com.whats.service.QuestionService;
@@ -49,7 +51,7 @@ public class WebhookController {
 			  "Nome do projeto", "Nome da loja", "Período de ativação em loja", 
 			  "Alinhamento com as iniciativas estratégicas da Colgate", "Responsável", "Ajudantes", "Descrição",
 			  "Inserir imagens", "Clique no clipe ( 📎 ) para anexar as imagens do projeto",
-			  "Clique em OK para confirmar a inscrição do seu projeto"};
+			  "Digite o seu email para receber o projeto", "Clique em OK para confirmar a inscrição do seu projeto"};
 	
 	private static final String[] PROJECT_CHOICES_ALIGNMENT = new String[] { 
 			  "Eficiencia e produtividade", "Criatividade e inovação", "Metas e incentivos" };
@@ -69,10 +71,14 @@ public class WebhookController {
 	@Autowired
 	private ProjectService projectService;
 	
+	@Autowired
+	private ImageService imageService;
+	
 	@PostMapping
 	public String login(@RequestBody MessageEvent messageEvent) {
 		
 		String messageJson = messageEvent.toString();
+		System.out.println(messageJson);
 		
 		try {
 			MessageEventDto messageDto = new ObjectMapper().readValue(messageJson, MessageEventDto.class);
@@ -134,6 +140,22 @@ public class WebhookController {
 						
 						break;
 					} case 9: {
+						
+						if (content == null) {
+							
+							if (!isImageContent(messageDto)) {
+								log.warn("Não é um arquivo válido");
+								messageService.sendMessage(messageDto.getMessage().getFrom(), "Anexo inválido, por favor insira uma imagem");
+								break;
+							}
+							
+							String mimetype = messageDto.getMessage().getContents().get(0).getFileMimeType();
+							String url = messageDto.getMessage().getContents().get(0).getFileUrl();
+							
+							Image image = imageService.saveImage(url, mimetype);
+							project.setImage(image);
+						}
+						
 						mapUserData.put("projectQuestion", 10);
 						
 						List<String> list = new ArrayList<String>();
@@ -142,7 +164,17 @@ public class WebhookController {
 						
 						break;
 					} case 10: {
+						project.setMail(content);
+						
+						mapUserData.put("projectQuestion", 11);
+						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[10]);
+					} case 11: {
 						projectService.save(project);
+						
+						//salvar pdf projeto
+						
+						//enviar email
+						
 						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_REGISTRATION);
 						mapUserData.remove("projectQuestion");
 					}
@@ -186,7 +218,7 @@ public class WebhookController {
 				if (!userService.isQuestionAnswered(user, question)) {
 					
 					//verifica se é a resposta correta
-					Choice choice = choiceService.findByNameQuestion(content, question);
+					Choice choice = choiceService.findByDisplayQuestion(content, question);
 					boolean isCorrect = question.getAnswer().equals(choice.getId());
 					
 					//atualiza user_question
@@ -220,21 +252,17 @@ public class WebhookController {
 						//salva a questão na sessão
 						mapUserData.put("lastQuestion", nextQuestion.getId());
 						
-						//busca as escolhas pra essa questão
-						List<String> choices = new ArrayList<>();
-						for (Choice cho : nextQuestion.getChoices()) {
-							choices.add(cho.getName());
-						}
+						//busca as escolhas pra essa questão eenvia questão
+						sendQuestion(messageDto, nextQuestion);
 						
-//						if (nextQuestion.getId() == 2) {
-//							choices.remove(3);
-//							messageService.sendButtonMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices, true);
-//						} else {
-//							messageService.sendListMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices);
+//						//busca as escolhas pra essa questão
+//						List<String> choices = new ArrayList<>();
+//						for (Choice cho : nextQuestion.getChoices()) {
+//							choices.add(cho.getName());
 //						}
-						
-						messageService.sendListMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices);
-	
+//						
+//						messageService.sendListMessage(messageDto.getMessage().getFrom(), nextQuestion.getName(), choices);
+//	
 						message = "";
 					}
 					
@@ -306,13 +334,8 @@ public class WebhookController {
 			//salva a questão na sessão
 			mapUserData.put("lastQuestion", question.getId());
 			
-			//busca as escolhas pra essa questão
-			List<String> choices = new ArrayList<>();
-			for (Choice choice : question.getChoices()) {
-				choices.add(choice.getName());
-			}
-
-			messageService.sendListMessage(messageDto.getMessage().getFrom(), question.getName(), choices);
+			//busca as escolhas pra essa questão eenvia questão
+			sendQuestion(messageDto, question);
 			
 			return "";
 		} else if ("2".equals(content)) {
@@ -334,6 +357,42 @@ public class WebhookController {
 			messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[0]);
 		}
 		return "";
+	}
+
+	private void sendQuestion(MessageEventDto messageDto, Question question) {
+		List<String> choices = new ArrayList<>();
+
+		StringBuilder questionStringBuilder = new StringBuilder("");
+		questionStringBuilder.append(question.getName());
+		questionStringBuilder.append("\n");
+		
+		int count = 0;
+		for (Choice choice : question.getChoices()) {
+			switch (count) {
+			case 0: 
+				questionStringBuilder.append("A) " + choice.getName());
+				choices.add("Resposta A");
+				break;
+			case 1: 
+				questionStringBuilder.append("B) " + choice.getName());
+				choices.add("Resposta B");
+				break;
+			case 2: 
+				questionStringBuilder.append("C) " + choice.getName());
+				choices.add("Resposta C");
+				break;
+			case 3: 
+				questionStringBuilder.append("D) " + choice.getName());
+				choices.add("Resposta D");
+				break;
+			}
+			questionStringBuilder.append("\n");
+			count++;
+		}
+		
+
+		messageService.sendMessage(messageDto.getMessage().getFrom(), questionStringBuilder.toString());
+		messageService.sendListMessage(messageDto.getMessage().getFrom(), "A resposta correta é:", choices);
 	}
 
 	private String getMenuMessage(String name, boolean isAdmin) {
@@ -383,6 +442,16 @@ public class WebhookController {
 			return message.getMessage().getContents().get(0).getText();
 		} 
 		return null;
+	}
+	
+	private boolean isImageContent(MessageEventDto message) {
+		
+		if (message.getMessage() != null && message.getMessage().getContents() != null && 
+				!message.getMessage().getContents().isEmpty()) {
+			return message.getMessage().getContents().get(0).getFileMimeType() != null && 
+					message.getMessage().getContents().get(0).getFileMimeType().equals("image/jpeg");
+		} 
+		return false;
 	}
 	
 	private String getFrom(MessageEventDto message) {

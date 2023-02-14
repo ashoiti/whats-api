@@ -15,13 +15,18 @@ public class ChoiceService {
 	
 	public boolean isChoice(String choice) {
 		
-		return !repository.findByName(choice).isEmpty();
+		return !repository.findByDisplay(choice).isEmpty();
 		
 	}
 	
 	public Choice findByNameQuestion(String name, Question question) {
 		
 		return repository.findByNameAndQuestion(name, question).get(0);
+	}
+	
+	public Choice findByDisplayQuestion(String display, Question question) {
+		
+		return repository.findByDisplayAndQuestion(display, question).get(0);
 	}
 	
 	public Choice findById(Integer id) {

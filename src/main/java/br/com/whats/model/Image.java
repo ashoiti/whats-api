@@ -1,5 +1,6 @@
 package br.com.whats.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,8 +20,15 @@ public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
     
     @Lob
     private byte[] content;
+    
+    @Column(name = "zenvia_url")
+    private String zenviaUrl;
+    
+    private String mimetype;
+    
+    private String name;
 }

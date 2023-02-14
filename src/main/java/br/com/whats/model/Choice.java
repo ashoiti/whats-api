@@ -26,4 +26,6 @@ public class Choice {
     @ManyToOne
     @JoinColumn(name="id_question", nullable=false)	
     private Question question;
+    
+    private String display;
 }
