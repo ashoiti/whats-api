@@ -29,6 +29,7 @@ public class Project {
     private String assistant;
     private String description;
     private String mail;
+    private String storage;
     
     @ManyToOne
     @JoinColumn(name="id_user", nullable=false)	

@@ -12,16 +12,19 @@ public class ProjectService {
 	@Autowired
 	private IProjectRepository repository;
 	
+	@Autowired
+	private PdfService pdfService;
+	
 	public void save(Project project) {
 		
 		repository.save(project);
 		
 	}
 	
-	public String generatePdfProject(Project project) {
+	public void generatePdfProject(Project project) {
 		
+		pdfService.generatePDF(project);
 		
-		return "";
 	}
 	
 }

@@ -300,7 +300,7 @@ public class UserController {
 	@GetMapping(value = "/generate-zenvia-image")
 	public void generateZenviaImage() {
 		try {
-			HttpResponse<InputStream> asBinary = Unirest.get("https://zenvia.chat/storage/files/2ae2bcd2856230fc62aa9901b8f8dc99c9cd2a84af2b025cae9067a3a6e3a602.bin")
+			HttpResponse<InputStream> asBinary = Unirest.get("https://chat.zenvia.com/storage/files/5aab255203c10d7557b1de10d5185bbd2b0b4a879634ae81ccc0beb58dd73fdb.bin")
 			  .asBinary();
 			System.out.println(asBinary);
 			

@@ -25,6 +25,7 @@ import br.com.whats.model.User;
 import br.com.whats.model.UserQuiz;
 import br.com.whats.service.ChoiceService;
 import br.com.whats.service.ImageService;
+import br.com.whats.service.MailService;
 import br.com.whats.service.MessageService;
 import br.com.whats.service.ProjectService;
 import br.com.whats.service.QuestionService;
@@ -73,6 +74,9 @@ public class WebhookController {
 	
 	@Autowired
 	private ImageService imageService;
+	
+	@Autowired
+	private MailService mailService;
 	
 	@PostMapping
 	public String login(@RequestBody MessageEvent messageEvent) {
@@ -158,22 +162,24 @@ public class WebhookController {
 						
 						mapUserData.put("projectQuestion", 10);
 						
-						List<String> list = new ArrayList<String>();
-						list.add("OK");
-						messageService.sendButtonMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[9], list, false);
+						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[9]);
 						
 						break;
 					} case 10: {
 						project.setMail(content);
 						
 						mapUserData.put("projectQuestion", 11);
-						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[10]);
+						List<String> list = new ArrayList<String>();
+						list.add("OK");
+						messageService.sendButtonMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[10], list, false);
+						
 					} case 11: {
+						
+						projectService.generatePdfProject(project);
+						
 						projectService.save(project);
 						
-						//salvar pdf projeto
-						
-						//enviar email
+						mailService.sendEmail(project.getMail(), project.getStorage());
 						
 						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_REGISTRATION);
 						mapUserData.remove("projectQuestion");

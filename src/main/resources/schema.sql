@@ -67,6 +67,7 @@ CREATE TABLE tb_project (
   id_user INTEGER NOT NULL,
   id_image BIGINT,
   mail VARCHAR(100),
+  storage VARCHAR(200),
   CONSTRAINT fk_tb_project FOREIGN KEY (id_user) REFERENCES tb_user(id),
   CONSTRAINT fk_tb_project2 FOREIGN KEY (id_image) REFERENCES tb_image(id)
 );
