@@ -21,7 +21,7 @@ spring:
     init:
       mode: never
 zenvia:
-  from: sassy-nannyberry
-  token: svbfnSax7RN2KYB8Fz5zR9tqunWtuun8XgNb
+  from: flaxen-nymphea
+  token: lywCOVGQl0tgUNfrddbnpkSmaBF-TJI-rF-q
   url: https://api.zenvia.com/v2/channels/whatsapp/messages
   fileUrl: https://api.zenvia.com/v2/files

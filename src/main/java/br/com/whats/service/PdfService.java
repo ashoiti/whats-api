@@ -40,7 +40,7 @@ public class PdfService {
 	        field.setValue(project.getDescription());
 	        
 			if (project.getImage() != null) {
-		        PDImageXObject pdImage = PDImageXObject.createFromByteArray(pDDocument, project.getImage().getContent(), project.getImage().getName());
+		        PDImageXObject pdImage = PDImageXObject.createFromByteArray(pDDocument, project.getImage().getContent(), "a.png");
 		        
 		        PDPage my_page = new PDPage();
 		        pDDocument.addPage(my_page);

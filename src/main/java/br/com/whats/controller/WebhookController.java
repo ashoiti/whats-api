@@ -1,5 +1,6 @@
 package br.com.whats.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -130,7 +131,7 @@ public class WebhookController {
 						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[6]);
 						break;
 					} case 7: {
-						project.setDescription(content);
+						project.setDescription(formatDescription(content));
 						mapUserData.put("projectQuestion", 8);
 						
 						List<String> list = new ArrayList<String>();
@@ -173,22 +174,36 @@ public class WebhookController {
 						list.add("OK");
 						messageService.sendButtonMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[10], list, false);
 						
+						break;
+						
 					} case 11: {
 						
 						projectService.generatePdfProject(project);
 						
 						projectService.save(project);
 						
-						mailService.sendEmail(project.getMail(), project.getStorage());
+						User user = (User) mapUserData.get("user");
+						
+						mailService.sendEmail(project.getMail(), project.getStorage(), project.getName(), user.getName(), LocalDateTime.now());
 						
 						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_REGISTRATION);
 						mapUserData.remove("projectQuestion");
+						
+						message = getMenuMessage(user.getName(), user.getProfile().equals("ADMIN"));
+						messageService.sendMessage(messageDto.getMessage().getFrom(), message);
 					}
 					
 				}
 			} else if (checkGreeting(content)) {
 				
-				message = GREETING_MESSAGE;
+				if (mapUser.get(getFrom(messageDto)) != null) {
+					Map<String, Object> mapUserData = (Map<String, Object>) mapUser.get(getFrom(messageDto));
+					User user = (User) mapUserData.get("user");
+					message = getMenuMessage(user.getName(), user.getProfile().equals("ADMIN"));
+				} else {
+				
+					message = GREETING_MESSAGE;
+				}
 				
 			} else if (content.matches("[1-9]")) {
 				
@@ -301,6 +316,24 @@ public class WebhookController {
 		return"";
 	}
 	
+	private String formatDescription(String content) {
+		
+		StringBuilder sb = new StringBuilder(content);
+		
+		if (content.length() > 50 && content.length() <= 100) {
+			sb.insert(50, "\n");
+		} else if (content.length() > 100 && content.length() <= 150) {
+			sb.insert(50, "\n");
+			sb.insert(100, "\n");
+		} else if (content.length() > 150 && content.length() <= 200) {
+			sb.insert(50, "\n");
+			sb.insert(100, "\n");
+			sb.insert(150, "\n");
+		} 
+		
+		return sb.toString();
+	}
+
 	private String formatResultQuiz(Integer total, Integer result) {
 		return result + "/" + total;
 	}

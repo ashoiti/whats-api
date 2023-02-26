@@ -1,4 +1,4 @@
-package br.com.whats.service;
+package br.com.whats.controller;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -6,8 +6,10 @@ import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mashape.unirest.http.HttpResponse;
@@ -17,43 +19,24 @@ import com.mashape.unirest.http.Unirest;
 import br.com.whats.dto.ImageDto;
 import br.com.whats.model.Image;
 import br.com.whats.repository.IImageRepository;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
-@Service
-public class ImageService {
-	
-	@Value("${zenvia.token}")
-	private String token;
-	
-	@Value("${zenvia.fileUrl}")
-	private String url;
-	
-	@Value("${zenvia.from}")
-	private String from;
+@RestController
+@RequestMapping("/test")
+public class TestController {
 	
 	@Autowired
-	private IImageRepository repository;
+	private IImageRepository rep;
 	
-	public Image saveImage(String sourceUrl, String mimeType) {
-		
-		ImageDto imageDto = saveImageZenviaRep(sourceUrl, mimeType);
-		
-		byte[] imageContent = getImageZenviaRep(sourceUrl);
-		
-		Image img = new Image();
-		img.setMimetype(mimeType);
-		img.setName(imageDto.getName());
-		img.setContent(imageContent);
-		img.setZenviaUrl(imageDto.getId());
-		Image image = repository.save(img);
-		
-		return image;
-		
-	}
+	private String url = "https://api.zenvia.com/v2/files";
+	private String token = "lywCOVGQl0tgUNfrddbnpkSmaBF-TJI-rF-q";
 	
+	@GetMapping(value = "/generate-zenvia-image")
 	public ImageDto saveImageZenviaRep(String sourceUrl, String mimeType) {
 		try {
+			
+			sourceUrl = "https://chat.zenvia.com/storage/files/d0708be46fc20f0444f1f418f2d72cc60c7ed048bbba6cb9286dc28feaedecb4.bin";
+			mimeType = "image/jpeg";
+			
 			HttpResponse<JsonNode> jsonResponse 
 			  = Unirest.post(url)
 			  .headers(getHeaders())
@@ -70,30 +53,35 @@ public class ImageService {
 			return dto;
 			
 		} catch (Exception e) {
-			log.error(e.getMessage(), e);
+			System.out.println(e);
 			return null;
 		}
 	}
 	
-	public byte[] getImageZenviaRep(String urlSource) {
+	@GetMapping(value = "/generate-zenvia-image-content")
+	public void getImageZenviaRep(@RequestParam String urlSource) {
 		try {
-			HttpResponse<InputStream> asBinary = Unirest.get(urlSource)
+			HttpResponse<InputStream> asBinary = Unirest.get(url + "/" + urlSource)
 			  .asBinary();
 			System.out.println(asBinary);
 			
-		    return IOUtils.toByteArray(asBinary.getBody());
+			Image img = new Image();
+			img.setContent(IOUtils.toByteArray(asBinary.getBody()));
+			rep.save(img);
+			
+//		    return IOUtils.toByteArray(asBinary.getBody());
 			
 		} catch (Exception e) {
-			log.error(e.getMessage(), e);
-			return null;
+			System.out.println(e);
+//			return null;
 		}
 	}
 		
 	
 	private Map<String, String> getHeaders() {
 		Map<String, String> headers = new HashMap<String, String>();
-		headers.put("Content-Type", "application/json");
-		headers.put("X-API-TOKEN", token);
+//		headers.put("Content-Type", "application/json");
+		headers.put("X-API-TOKEN", token );
 		
 		return headers;
 	}
@@ -111,8 +99,5 @@ public class ImageService {
 		
 		return body;
 	}
-
-	
-
 
 }

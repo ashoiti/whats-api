@@ -25,11 +25,9 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDPage;
-import org.apache.pdfbox.pdmodel.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.pdmodel.interactive.form.PDAcroForm;
 import org.apache.pdfbox.pdmodel.interactive.form.PDField;
+import org.apache.pdfbox.pdmodel.interactive.form.PDTextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -187,18 +185,23 @@ public class UserController {
 	        field.setValue("This is a fifth field printed by Java");
 	        field = pDAcroForm.getField("helper");
 	        field.setValue("This is a sixth field printed by Java");
+	        
+	        PDTextField pdtff = new PDTextField(pDAcroForm);
+	        
 	        field = pDAcroForm.getField("description");
-	        field.setValue("This is a seventh field printed by Java");
+	        field.setValue("45, Sankey Road,\r\r\" +\r\n"
+	        		+ "            \"Lower Palace Orchards,\r\r\" +\r\n"
+	        		+ "            \"Bangalore, India.");
 	        
 			
-	        PDImageXObject pdImage = PDImageXObject.createFromByteArray(pDDocument, rep.getById((long)1).getContent(), "a.png");
-	        
-	        PDPage my_page = new PDPage();
-	        pDDocument.addPage(my_page);
-	        PDPageContentStream contents = new PDPageContentStream(pDDocument, pDDocument.getPage(1));
-	        contents.drawImage(pdImage, 25, 150, 500, 500);  
-	        contents.setHorizontalScaling(50);
-	        contents.close();  
+//	        PDImageXObject pdImage = PDImageXObject.createFromByteArray(pDDocument, rep.getById((long)1).getContent(), "a.png");
+//	        
+//	        PDPage my_page = new PDPage();
+//	        pDDocument.addPage(my_page);
+//	        PDPageContentStream contents = new PDPageContentStream(pDDocument, pDDocument.getPage(1));
+//	        contents.drawImage(pdImage, 25, 150, 500, 500);  
+//	        contents.setHorizontalScaling(50);
+//	        contents.close();  
 	        
 	        ByteArrayOutputStream out = new ByteArrayOutputStream();
 	        pDDocument.save(out);
@@ -270,7 +273,7 @@ public class UserController {
 			  Message.RecipientType.TO, InternetAddress.parse("andre.shoiti@gmail.com"));
 			message.setSubject("Mail Subject");
 			
-			String msg = "This is my first email using JavaMailer";
+			String msg = "This is my first email \n\n\nusing JavaMailer";
 			
 			MimeBodyPart mimeBodyPart = new MimeBodyPart();
 			mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
@@ -323,7 +326,7 @@ public class UserController {
 		try {
 			
 			Map<String, String> headers = new HashMap<String, String>();
-			headers.put("X-API-TOKEN", "xDFcVc4hcUJaVVAkUuo-9mG94m9lmLGDO84U");
+			headers.put("X-API-TOKEN", "lywCOVGQl0tgUNfrddbnpkSmaBF-TJI-rF-q");
 			
 			HttpResponse<JsonNode> jsonResponse 
 			  = Unirest.post("https://api.zenvia.com/v2/files")
@@ -349,7 +352,7 @@ public class UserController {
 		body.put("autoDeleteMinutes", 5);
 		
 		Map<String, Object> sourceHeader = new HashMap<String, Object>();
-		sourceHeader.put("Authorization", "Basic" + " " + "xDFcVc4hcUJaVVAkUuo-9mG94m9lmLGDO84U");
+		sourceHeader.put("Authorization", "Basic" + " " + "lywCOVGQl0tgUNfrddbnpkSmaBF-TJI-rF-q");
 		sourceHeader.put("X-Custom-Token", "TOKEN");
 		body.put("sourceHeaders", sourceHeader);
 		

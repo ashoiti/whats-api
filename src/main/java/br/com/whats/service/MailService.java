@@ -2,6 +2,8 @@ package br.com.whats.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 import javax.mail.Address;
@@ -23,7 +25,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class MailService {
 		
-	public void sendEmail(String to, String storage) {
+	public void sendEmail(String to, String storage, String projectName, String projectOwner, LocalDateTime date) {
 		
 		Properties prop = new Properties();
 		prop.put("mail.smtp.host", "smtp.gmail.com");
@@ -47,9 +49,11 @@ public class MailService {
 	                 .parse("andre.shoiti@gmail.com, "+ to );
 			
 			message.setRecipients(Message.RecipientType.TO, toUser);
-			message.setSubject("Mail Subject");
+			message.setSubject("Cadastro do projeto " + projectName);
 			
-			String msg = "This is my first email using JavaMailer";
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+			
+			String msg = "Olá " + projectOwner + "!\n\nSegue em anexo o projeto cadastrado\n\nProjeto cadastrado em: " +  date.format(formatter);
 			
 			MimeBodyPart mimeBodyPart = new MimeBodyPart();
 			mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
