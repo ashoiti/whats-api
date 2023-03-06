@@ -53,7 +53,7 @@ public class MailService {
 			
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
 			
-			String msg = "Olá " + projectOwner + "!\n\nSegue em anexo o projeto cadastrado\n\nProjeto cadastrado em: " +  date.format(formatter);
+			String msg = "<html>Olá " + projectOwner + "!<br><br>Segue em anexo o projeto cadastrado.<br><br>Projeto cadastrado em: " +  date.format(formatter) + "</html>";
 			
 			MimeBodyPart mimeBodyPart = new MimeBodyPart();
 			mimeBodyPart.setContent(msg, "text/html; charset=utf-8");

@@ -131,7 +131,7 @@ public class WebhookController {
 						messageService.sendMessage(messageDto.getMessage().getFrom(), PROJECT_QUESTION[6]);
 						break;
 					} case 7: {
-						project.setDescription(formatDescription(content));
+						project.setDescription(content);
 						mapUserData.put("projectQuestion", 8);
 						
 						List<String> list = new ArrayList<String>();

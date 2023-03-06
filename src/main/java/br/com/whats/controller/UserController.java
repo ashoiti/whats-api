@@ -185,13 +185,8 @@ public class UserController {
 	        field.setValue("This is a fifth field printed by Java");
 	        field = pDAcroForm.getField("helper");
 	        field.setValue("This is a sixth field printed by Java");
-	        
-	        PDTextField pdtff = new PDTextField(pDAcroForm);
-	        
 	        field = pDAcroForm.getField("description");
-	        field.setValue("45, Sankey Road,\r\r\" +\r\n"
-	        		+ "            \"Lower Palace Orchards,\r\r\" +\r\n"
-	        		+ "            \"Bangalore, India.");
+	        field.setValue("é dificil ter um negocio lucrativo é dificil ter um negocio lucrativo é dificil ter um negocio lucrativo é dificil ter um negocio lucrativo");
 	        
 			
 //	        PDImageXObject pdImage = PDImageXObject.createFromByteArray(pDDocument, rep.getById((long)1).getContent(), "a.png");
@@ -206,7 +201,7 @@ public class UserController {
 	        ByteArrayOutputStream out = new ByteArrayOutputStream();
 	        pDDocument.save(out);
 	        
-	        pDDocument.save("C:\\Users\\Andre\\Downloads\\pdf-java-output.pdf");
+	        pDDocument.save("C:\\Users\\andre.shoiti.yamachi\\Downloads\\pdf-java-output.pdf");
 	        pDDocument.close();
 	        
 	        sendEmail();
@@ -273,13 +268,13 @@ public class UserController {
 			  Message.RecipientType.TO, InternetAddress.parse("andre.shoiti@gmail.com"));
 			message.setSubject("Mail Subject");
 			
-			String msg = "This is my first email \n\n\nusing JavaMailer";
+			String msg = "<html>The apache logo<br><br>The apache logo</html>";
 			
 			MimeBodyPart mimeBodyPart = new MimeBodyPart();
 			mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
 			
 			MimeBodyPart attachmentBodyPart = new MimeBodyPart();
-			attachmentBodyPart.attachFile(new File("C:\\Users\\Andre\\Downloads\\pdf-java-output.pdf"));
+			attachmentBodyPart.attachFile(new File("C:\\Users\\andre.shoiti.yamachi\\Downloads\\pdf-java-output.pdf"));
 			
 			Multipart multipart = new MimeMultipart();
 			multipart.addBodyPart(mimeBodyPart);
